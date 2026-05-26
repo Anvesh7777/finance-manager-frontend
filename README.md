@@ -1,16 +1,134 @@
-# React + Vite
+# Finance Manager Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern Personal Finance Manager frontend built using React + Vite + Tailwind CSS.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+# Features
 
-## React Compiler
+- Beautiful Modern UI
+- JWT Authentication
+- Dashboard Analytics
+- Transaction Management
+- Category Management
+- Goal Tracking
+- Financial Reports
+- Responsive Design
+- Protected Routes
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+# Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React.js
+- Vite
+- Tailwind CSS
+- Axios
+- React Router DOM
+- Recharts
+
+---
+
+# Live Demo
+
+```bash
+https://finance-manager-frontend-murex.vercel.app
+```
+
+---
+
+# Backend API
+
+```bash
+https://finance-manager-backend-p8n5.onrender.com/api
+```
+
+---
+
+# Environment Variables
+
+Create:
+
+```bash
+.env
+```
+
+Add:
+
+```env
+VITE_API_BASE_URL=https://finance-manager-backend-p8n5.onrender.com/api
+```
+
+---
+
+# Run Locally
+
+## Clone
+
+```bash
+git clone YOUR_FRONTEND_REPO_LINK
+```
+
+## Install Dependencies
+
+```bash
+npm install
+```
+
+## Start Development Server
+
+```bash
+npm run dev
+```
+
+---
+
+# Build Production
+
+```bash
+npm run build
+```
+
+---
+
+# Folder Structure
+
+```bash
+src/
+│
+├── components/
+├── pages/
+├── services/
+├── context/
+├── routes/
+├── layouts/
+└── utils/
+```
+
+---
+
+# Authentication
+
+JWT Token stored in:
+
+```bash
+localStorage
+```
+
+Protected routes automatically redirect unauthenticated users to login.
+
+---
+
+# Deployment
+
+Frontend deployed on:
+
+```bash
+Vercel
+```
+
+---
+
+# Author
+
+Anvesh Mahajan
