@@ -63,6 +63,16 @@ function RegisterPage() {
 
       try {
 
+        console.log(
+          "PASSWORD:",
+          password
+        );
+
+        console.log(
+          "PASSWORD LENGTH:",
+          password.trim().length
+        );
+
         // PASSWORD VALIDATION
         if (
           password
@@ -80,19 +90,25 @@ function RegisterPage() {
         }
 
         // REGISTER API
-        await registerUser({
+        const response =
+          await registerUser({
 
-          name:
-            name.trim(),
+            name:
+              name.trim(),
 
-          email:
-            email
-              .trim()
-              .toLowerCase(),
+            email:
+              email
+                .trim()
+                .toLowerCase(),
 
-          password:
-            password.trim(),
-        });
+            password:
+              password.trim(),
+          });
+
+        console.log(
+          "REGISTER RESPONSE:",
+          response
+        );
 
         alert(
           "Registration Successful ✅"
@@ -104,7 +120,20 @@ function RegisterPage() {
 
       } catch (error) {
 
-        console.log(error);
+        console.log(
+          "FULL ERROR:",
+          error
+        );
+
+        console.log(
+          "RESPONSE DATA:",
+          error?.response?.data
+        );
+
+        console.log(
+          "STATUS:",
+          error?.response?.status
+        );
 
         const message =
 
@@ -114,7 +143,14 @@ function RegisterPage() {
 
           "Registration Failed ❌";
 
-        setError(message);
+        setError(
+
+          typeof message === "string"
+
+            ? message
+
+            : JSON.stringify(message)
+        );
 
       } finally {
 
@@ -130,7 +166,7 @@ function RegisterPage() {
 
         <h1 className="text-5xl font-bold text-[#111827] mb-3">
 
-          Create Account 🚀
+          Create Account 
 
         </h1>
 
