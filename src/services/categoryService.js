@@ -43,7 +43,8 @@ export const createCategory =
       );
 
     return response.data;
-  };
+    };
+  
 
 // GET CATEGORY BY ID
 export const getCategoryById =
