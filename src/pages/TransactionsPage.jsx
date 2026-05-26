@@ -19,10 +19,6 @@ import {
 
 function TransactionsPage() {
 
-  // =========================
-  // STATES
-  // =========================
-
   const [transactions, setTransactions] =
     useState([]);
 
@@ -32,21 +28,11 @@ function TransactionsPage() {
   const [loading, setLoading] =
     useState(true);
 
-  const [search, setSearch] =
-    useState("");
-
-  const [filterType, setFilterType] =
-    useState("ALL");
-
   const [formData, setFormData] =
     useState({
-
       amount: "",
-
       date: "",
-
       description: "",
-
       categoryId: "",
     });
 
@@ -56,11 +42,17 @@ function TransactionsPage() {
 
   useEffect(() => {
 
-    fetchTransactions();
-
-    fetchCategories();
+    loadData();
 
   }, []);
+
+  const loadData = async () => {
+
+    await Promise.all([
+      fetchTransactions(),
+      fetchCategories(),
+    ]);
+  };
 
   // =========================
   // FETCH TRANSACTIONS
@@ -116,12 +108,19 @@ function TransactionsPage() {
 
       try {
 
+        const token =
+          localStorage.getItem("token");
+
+        console.log(
+          "TOKEN:",
+          token
+        );
+
         const data =
           await getCategories();
 
-        // 🔥 IMPORTANT DEBUG
         console.log(
-          "CATEGORIES DATA:",
+          "CATEGORIES API RESPONSE:",
           data
         );
 
@@ -152,7 +151,7 @@ function TransactionsPage() {
     };
 
   // =========================
-  // HANDLE CHANGE
+  // HANDLE INPUT
   // =========================
 
   const handleChange =
@@ -192,9 +191,7 @@ function TransactionsPage() {
         const payload = {
 
           amount:
-            Number(
-              formData.amount
-            ),
+            Number(formData.amount),
 
           date:
             formData.date,
@@ -224,20 +221,13 @@ function TransactionsPage() {
           "Transaction Added ✅"
         );
 
-        // RESET FORM
-
         setFormData({
 
           amount: "",
-
           date: "",
-
           description: "",
-
           categoryId: "",
         });
-
-        // REFRESH
 
         fetchTransactions();
 
@@ -286,7 +276,7 @@ function TransactionsPage() {
     };
 
   // =========================
-  // FILTER TRANSACTIONS
+  // FILTERED
   // =========================
 
   const filteredTransactions =
@@ -301,38 +291,9 @@ function TransactionsPage() {
         return [];
       }
 
-      return transactions.filter(
-        (transaction) => {
+      return transactions;
 
-          const matchesSearch =
-            (
-              transaction.description ||
-              ""
-            )
-              .toLowerCase()
-              .includes(
-                search.toLowerCase()
-              );
-
-          const matchesType =
-            filterType === "ALL"
-              ? true
-              : transaction.category
-                  ?.type ===
-                filterType;
-
-          return (
-            matchesSearch &&
-            matchesType
-          );
-        }
-      );
-
-    }, [
-      transactions,
-      search,
-      filterType,
-    ]);
+    }, [transactions]);
 
   return (
 
@@ -347,102 +308,58 @@ function TransactionsPage() {
           subtitle="Manage and track all your financial activity."
         />
 
-        {/* ========================= */}
-        {/* ADD TRANSACTION */}
-        {/* ========================= */}
+        {/* FORM */}
 
-        <div className="bg-white/80 backdrop-blur-2xl rounded-[36px] p-8 border border-white/40 shadow-2xl mb-10">
+        <div className="bg-white rounded-[30px] p-8 shadow-xl mb-10">
 
-          <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold mb-6">
 
-            <div>
+            Add Transaction
 
-              <h2 className="text-3xl font-bold text-gray-900">
-
-                Add Transaction
-
-              </h2>
-
-              <p className="text-gray-500 mt-2">
-
-                Record your income and expenses.
-
-              </p>
-
-            </div>
-
-            <div className="text-5xl">
-
-              💸
-
-            </div>
-
-          </div>
+          </h2>
 
           <form
             onSubmit={handleSubmit}
             className="grid lg:grid-cols-2 gap-5"
           >
 
-            {/* AMOUNT */}
-
             <input
               type="number"
               name="amount"
               placeholder="Amount"
-              value={
-                formData.amount
-              }
-              onChange={
-                handleChange
-              }
+              value={formData.amount}
+              onChange={handleChange}
               required
-              className="p-5 rounded-3xl border border-gray-200 outline-none bg-white"
+              className="p-5 rounded-3xl border"
             />
-
-            {/* DATE */}
 
             <input
               type="date"
               name="date"
-              value={
-                formData.date
-              }
-              onChange={
-                handleChange
-              }
+              value={formData.date}
+              onChange={handleChange}
               required
-              className="p-5 rounded-3xl border border-gray-200 outline-none bg-white"
+              className="p-5 rounded-3xl border"
             />
-
-            {/* DESCRIPTION */}
 
             <input
               type="text"
               name="description"
               placeholder="Description"
-              value={
-                formData.description
-              }
-              onChange={
-                handleChange
-              }
+              value={formData.description}
+              onChange={handleChange}
               required
-              className="p-5 rounded-3xl border border-gray-200 outline-none bg-white"
+              className="p-5 rounded-3xl border"
             />
 
             {/* CATEGORY */}
 
             <select
               name="categoryId"
-              value={
-                formData.categoryId
-              }
-              onChange={
-                handleChange
-              }
+              value={formData.categoryId}
+              onChange={handleChange}
               required
-              className="p-5 rounded-3xl border border-gray-200 outline-none bg-white"
+              className="p-5 rounded-3xl border"
             >
 
               <option value="">
@@ -451,8 +368,6 @@ function TransactionsPage() {
 
               {
 
-                categories &&
-                categories.length > 0 &&
                 categories.map(
                   (category) => (
 
@@ -474,11 +389,9 @@ function TransactionsPage() {
 
             </select>
 
-            {/* SUBMIT */}
-
             <button
               type="submit"
-              className="lg:col-span-2 py-5 rounded-3xl bg-gradient-to-r from-[#6D4AFF] to-[#8B5CFF] text-white text-lg font-bold hover:scale-[1.01] transition"
+              className="lg:col-span-2 py-5 rounded-3xl bg-purple-600 text-white font-bold"
             >
 
               Add Transaction
@@ -489,62 +402,33 @@ function TransactionsPage() {
 
         </div>
 
-        {/* ========================= */}
-        {/* TRANSACTION HISTORY */}
-        {/* ========================= */}
+        {/* TRANSACTIONS */}
 
-        <div className="bg-white/80 backdrop-blur-2xl rounded-[36px] p-8 border border-white/40 shadow-2xl">
+        <div className="bg-white rounded-[30px] p-8 shadow-xl">
 
-          <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold mb-6">
 
-            <h2 className="text-3xl font-bold text-gray-900">
+            Transactions
 
-              Transactions
-
-            </h2>
-
-            <button
-              onClick={fetchTransactions}
-              className="px-5 py-3 rounded-2xl bg-[#6D4AFF] text-white font-semibold"
-            >
-
-              Refresh
-
-            </button>
-
-          </div>
+          </h2>
 
           {
 
             loading ? (
 
-              <p className="text-gray-500">
-
+              <p>
                 Loading...
-
               </p>
 
             ) : filteredTransactions.length === 0 ? (
 
-              <div className="text-center py-20">
-
-                <div className="text-6xl mb-5">
-
-                  📭
-
-                </div>
-
-                <h3 className="text-3xl font-bold text-gray-800">
-
-                  No Transactions Found
-
-                </h3>
-
-              </div>
+              <p>
+                No Transactions Found
+              </p>
 
             ) : (
 
-              <div className="space-y-5">
+              <div className="space-y-4">
 
                 {
 
@@ -553,12 +437,12 @@ function TransactionsPage() {
 
                       <div
                         key={transaction.id}
-                        className="flex justify-between items-center p-6 rounded-3xl bg-[#f8f7ff]"
+                        className="p-5 rounded-2xl bg-gray-100 flex justify-between items-center"
                       >
 
                         <div>
 
-                          <h3 className="text-xl font-bold">
+                          <h3 className="font-bold">
 
                             {
                               transaction.description
@@ -566,53 +450,28 @@ function TransactionsPage() {
 
                           </h3>
 
-                          <p className="text-gray-500 mt-1">
+                          <p>
 
                             {
                               transaction.category?.name
                             }
 
-                            {" • "}
-
-                            {
-                              transaction.date
-                            }
-
                           </p>
 
                         </div>
 
-                        <div className="flex items-center gap-5">
+                        <button
+                          onClick={() =>
+                            handleDelete(
+                              transaction.id
+                            )
+                          }
+                          className="bg-red-500 text-white px-4 py-2 rounded-xl"
+                        >
 
-                          <p
-                            className={`text-2xl font-bold ${
-                              transaction.category?.type ===
-                              "INCOME"
-                                ? "text-green-600"
-                                : "text-red-500"
-                            }`}
-                          >
+                          Delete
 
-                            ₹ {
-                              transaction.amount
-                            }
-
-                          </p>
-
-                          <button
-                            onClick={() =>
-                              handleDelete(
-                                transaction.id
-                              )
-                            }
-                            className="px-4 py-2 rounded-xl bg-red-500 text-white"
-                          >
-
-                            Delete
-
-                          </button>
-
-                        </div>
+                        </button>
 
                       </div>
                     )
