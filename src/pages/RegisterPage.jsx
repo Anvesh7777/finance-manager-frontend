@@ -32,7 +32,7 @@ function RegisterPage() {
   const navigate =
     useNavigate();
 
-  // REDIRECT IF LOGGED IN
+  // REDIRECT IF ALREADY LOGGED IN
   useEffect(() => {
 
     const token =
@@ -63,34 +63,44 @@ function RegisterPage() {
 
       try {
 
+        // PASSWORD VALIDATION
         if (
-          password.length < 6
+          password
+            .trim()
+            .length < 6
         ) {
 
           setError(
             "Password must be at least 6 characters"
           );
 
+          setLoading(false);
+
           return;
         }
 
+        // REGISTER API
         await registerUser({
 
           name:
             name.trim(),
 
           email:
-            email.trim()
+            email
+              .trim()
               .toLowerCase(),
 
-          password,
+          password:
+            password.trim(),
         });
 
         alert(
           "Registration Successful ✅"
         );
 
-        navigate("/login");
+        navigate(
+          "/login"
+        );
 
       } catch (error) {
 
@@ -98,8 +108,9 @@ function RegisterPage() {
 
         const message =
 
-          error?.response?.data
-            ?.message ||
+          error?.response?.data?.message ||
+
+          error?.response?.data ||
 
           "Registration Failed ❌";
 
@@ -119,7 +130,7 @@ function RegisterPage() {
 
         <h1 className="text-5xl font-bold text-[#111827] mb-3">
 
-          Create Account
+          Create Account 🚀
 
         </h1>
 
@@ -129,7 +140,7 @@ function RegisterPage() {
 
         </p>
 
-        {/* ERROR */}
+        {/* ERROR MESSAGE */}
 
         {error && (
 
