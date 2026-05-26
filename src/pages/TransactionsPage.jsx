@@ -15,9 +15,14 @@ import {
 
 import {
   getCategories,
+  createCategory,
 } from "../services/categoryService";
 
 function TransactionsPage() {
+
+  // =========================
+  // STATES
+  // =========================
 
   const [transactions, setTransactions] =
     useState([]);
@@ -28,12 +33,28 @@ function TransactionsPage() {
   const [loading, setLoading] =
     useState(true);
 
+  // TRANSACTION FORM
+
   const [formData, setFormData] =
     useState({
+
       amount: "",
+
       date: "",
+
       description: "",
+
       categoryId: "",
+    });
+
+  // CATEGORY FORM
+
+  const [categoryForm, setCategoryForm] =
+    useState({
+
+      name: "",
+
+      type: "EXPENSE",
     });
 
   // =========================
@@ -46,13 +67,16 @@ function TransactionsPage() {
 
   }, []);
 
-  const loadData = async () => {
+  const loadData =
+    async () => {
 
-    await Promise.all([
-      fetchTransactions(),
-      fetchCategories(),
-    ]);
-  };
+      await Promise.all([
+
+        fetchTransactions(),
+
+        fetchCategories(),
+      ]);
+    };
 
   // =========================
   // FETCH TRANSACTIONS
@@ -108,19 +132,11 @@ function TransactionsPage() {
 
       try {
 
-        const token =
-          localStorage.getItem("token");
-
-        console.log(
-          "TOKEN:",
-          token
-        );
-
         const data =
           await getCategories();
 
         console.log(
-          "CATEGORIES API RESPONSE:",
+          "CATEGORIES:",
           data
         );
 
@@ -142,16 +158,12 @@ function TransactionsPage() {
           error
         );
 
-        console.log(
-          error?.response?.data
-        );
-
         setCategories([]);
       }
     };
 
   // =========================
-  // HANDLE INPUT
+  // HANDLE TRANSACTION INPUT
   // =========================
 
   const handleChange =
@@ -164,6 +176,83 @@ function TransactionsPage() {
         [e.target.name]:
           e.target.value,
       });
+    };
+
+  // =========================
+  // HANDLE CATEGORY INPUT
+  // =========================
+
+  const handleCategoryChange =
+    (e) => {
+
+      setCategoryForm({
+
+        ...categoryForm,
+
+        [e.target.name]:
+          e.target.value,
+      });
+    };
+
+  // =========================
+  // CREATE CATEGORY
+  // =========================
+
+  const handleCreateCategory =
+    async (e) => {
+
+      e.preventDefault();
+
+      try {
+
+        if (
+          !categoryForm.name
+        ) {
+
+          alert(
+            "Category name required"
+          );
+
+          return;
+        }
+
+        await createCategory({
+
+          name:
+            categoryForm.name,
+
+          type:
+            categoryForm.type,
+        });
+
+        alert(
+          "Category Added ✅"
+        );
+
+        // RESET
+
+        setCategoryForm({
+
+          name: "",
+
+          type: "EXPENSE",
+        });
+
+        // REFRESH DROPDOWN
+
+        await fetchCategories();
+
+      } catch (error) {
+
+        console.log(
+          error
+        );
+
+        alert(
+          error?.response?.data?.message ||
+          "Failed to create category ❌"
+        );
+      }
     };
 
   // =========================
@@ -191,7 +280,9 @@ function TransactionsPage() {
         const payload = {
 
           amount:
-            Number(formData.amount),
+            Number(
+              formData.amount
+            ),
 
           date:
             formData.date,
@@ -209,7 +300,7 @@ function TransactionsPage() {
         };
 
         console.log(
-          "TRANSACTION PAYLOAD:",
+          "PAYLOAD:",
           payload
         );
 
@@ -221,11 +312,16 @@ function TransactionsPage() {
           "Transaction Added ✅"
         );
 
+        // RESET
+
         setFormData({
 
           amount: "",
+
           date: "",
+
           description: "",
+
           categoryId: "",
         });
 
@@ -234,12 +330,7 @@ function TransactionsPage() {
       } catch (error) {
 
         console.log(
-          "CREATE TRANSACTION ERROR:",
           error
-        );
-
-        console.log(
-          error?.response?.data
         );
 
         alert(
@@ -265,7 +356,6 @@ function TransactionsPage() {
       } catch (error) {
 
         console.log(
-          "DELETE ERROR:",
           error
         );
 
@@ -276,7 +366,7 @@ function TransactionsPage() {
     };
 
   // =========================
-  // FILTERED
+  // FILTERED TRANSACTIONS
   // =========================
 
   const filteredTransactions =
@@ -305,10 +395,79 @@ function TransactionsPage() {
 
         <Topbar
           title="Transactions"
-          subtitle="Manage and track all your financial activity."
+          subtitle="Manage all your transactions and categories."
         />
 
-        {/* FORM */}
+        {/* ========================= */}
+        {/* ADD CATEGORY */}
+        {/* ========================= */}
+
+        <div className="bg-white rounded-[30px] p-8 shadow-xl mb-10">
+
+          <h2 className="text-2xl font-bold mb-6">
+
+            Add Category
+
+          </h2>
+
+          <form
+            onSubmit={
+              handleCreateCategory
+            }
+            className="grid lg:grid-cols-3 gap-5"
+          >
+
+            <input
+              type="text"
+              name="name"
+              placeholder="Category Name"
+              value={
+                categoryForm.name
+              }
+              onChange={
+                handleCategoryChange
+              }
+              required
+              className="p-5 rounded-3xl border"
+            />
+
+            <select
+              name="type"
+              value={
+                categoryForm.type
+              }
+              onChange={
+                handleCategoryChange
+              }
+              className="p-5 rounded-3xl border"
+            >
+
+              <option value="EXPENSE">
+                EXPENSE
+              </option>
+
+              <option value="INCOME">
+                INCOME
+              </option>
+
+            </select>
+
+            <button
+              type="submit"
+              className="bg-[#6D4AFF] text-white rounded-3xl font-bold"
+            >
+
+              Add Category
+
+            </button>
+
+          </form>
+
+        </div>
+
+        {/* ========================= */}
+        {/* ADD TRANSACTION */}
+        {/* ========================= */}
 
         <div className="bg-white rounded-[30px] p-8 shadow-xl mb-10">
 
@@ -391,7 +550,7 @@ function TransactionsPage() {
 
             <button
               type="submit"
-              className="lg:col-span-2 py-5 rounded-3xl bg-purple-600 text-white font-bold"
+              className="lg:col-span-2 py-5 rounded-3xl bg-gradient-to-r from-[#6D4AFF] to-[#8B5CFF] text-white text-lg font-bold"
             >
 
               Add Transaction
@@ -402,7 +561,9 @@ function TransactionsPage() {
 
         </div>
 
+        {/* ========================= */}
         {/* TRANSACTIONS */}
+        {/* ========================= */}
 
         <div className="bg-white rounded-[30px] p-8 shadow-xl">
 
@@ -460,18 +621,31 @@ function TransactionsPage() {
 
                         </div>
 
-                        <button
-                          onClick={() =>
-                            handleDelete(
-                              transaction.id
-                            )
-                          }
-                          className="bg-red-500 text-white px-4 py-2 rounded-xl"
-                        >
+                        <div className="flex items-center gap-4">
 
-                          Delete
+                          <p className="font-bold text-xl">
 
-                        </button>
+                            ₹
+                            {
+                              transaction.amount
+                            }
+
+                          </p>
+
+                          <button
+                            onClick={() =>
+                              handleDelete(
+                                transaction.id
+                              )
+                            }
+                            className="bg-red-500 text-white px-4 py-2 rounded-xl"
+                          >
+
+                            Delete
+
+                          </button>
+
+                        </div>
 
                       </div>
                     )
